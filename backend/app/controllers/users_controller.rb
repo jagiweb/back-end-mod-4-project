@@ -1,39 +1,42 @@
 class UsersController < ApplicationController
     
     def sign_in
-    # Try and find a user in our database with the username we've been sent
-    user = User.find_by(username: params[:username])
-    # If we can find a user, attempt to authenticate them with the password we've been sent
-    if user && user.authenticate(params[:password])
-      # If we can authenticate the user successfully, send them back their username and generate a token for them
-      render json: { username: user.username, token: generate_token(id: user.id) }
-    else
-      # Otherwise, send back an error
-      render json: { error: "Username or Password is invalid "}
+        user = User.find_by(username: params[:username])
+        if user && user.authenticate(params[:password])
+            render json: {username: user.username, token: generate_token({ id: user.id })}
+        else
+            render json: {message: "No valid"}
+        end
     end
-  end
 
-  def validate
-    # Check if we can decode the token we've been sent and find a valid user
-    if get_user
-      # If so, send back that user's username and a newly generated token
-      render json: { username: get_user.username, token: generate_token(id: get_user.id)}
-    else
-      # Otherwise, send back an error
-      render json: { error: "You are not authorized" }
+    # def create
+    #     # user = User.new
+    #     user = User.new
+    #     if user
+    #         render json: {message: "SUCCESS!"}
+    #     else
+    #         render json: {message: "No valid"}
+    #     end
+    # end
+
+    def sign_up
+        user = User.new
+        if user
+            user.save(username: params[:username], password: params[:passowrd], email: params[:email], name: params[:name], lastname: params[:lastname])
+            render json: {message: "SUCCESS!"}
+        else
+            render json: {message: "No valid"}
+        end
     end
-  end
 
-  def items
-    # Check if we can decode the token we've been sent and find a valid user
-    if get_user
-      # If so, send back that user's items
-      render json: { items: get_user.items }
-    else
-      render json: { error: "You are not authorized" }
+    def validate
+        user = get_user
+        if user
+            render json: {username: user.username, token: generate_token({id: user.id})}
+        else
+            render json: {message: "You are not authorized"}
+        end
     end
-  end
-
     private
 
     def users_params
