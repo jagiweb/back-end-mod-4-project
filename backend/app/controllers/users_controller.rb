@@ -9,20 +9,9 @@ class UsersController < ApplicationController
         end
     end
 
-    # def create
-    #     # user = User.new
-    #     user = User.new
-    #     if user
-    #         render json: {message: "SUCCESS!"}
-    #     else
-    #         render json: {message: "No valid"}
-    #     end
-    # end
-
     def sign_up
-        user = User.new
-        if user
-            user.save(username: params[:username], password: params[:passowrd], email: params[:email], name: params[:name], lastname: params[:lastname])
+        user = User.create(username: params[:username], password: params[:password], email: params[:email], name: params[:name], lastname: params[:lastname])
+        if user.valid?
             render json: {message: "SUCCESS!"}
         else
             render json: {message: "No valid"}
